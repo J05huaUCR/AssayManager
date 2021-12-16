@@ -29,7 +29,7 @@ Timer::~Timer() {
 }
 
 /*	==========================================================================
-	Layout initialize
+	Timer initialize
 	
 	@param 	null		nothing
 	@return 	null		nothing
@@ -42,7 +42,7 @@ void Timer::init() {
 }
 
 /*	==========================================================================
-	Layout initialize
+	Delay Timer
 	
 	@param 	null		nothing
 	@return 	null		nothing
@@ -55,5 +55,38 @@ void Timer::wait(double s) {
 	};
 	
 	return;
+}
+
+/*	==========================================================================
+	Start Timer
+	
+	@param 	null		nothing
+	@return 	null		nothing
+	========================================================================== */
+void Timer::start() {	
+	Start = std::clock(); 
+	return;
+}
+
+/*	==========================================================================
+	Stop Timer
+	
+	@param 	null		nothing
+	@return 	null		nothing
+	========================================================================== */
+void Timer::stop() {	
+	Duration = std::clock() - Start;
+	return;
+}
+
+/*	==========================================================================
+	Stop Timer
+	
+	@param 	null		nothing
+	@return 	null		nothing
+	========================================================================== */
+double Timer::getDuration() {	
+	Duration = std::clock() - Start;
+	return Duration / (double) CLOCKS_PER_SEC;
 }
 

@@ -77,17 +77,20 @@ BioReactor::BioReactor( unsigned i, std::string l,
 	setFillLevelTolerance( o);
 	
 	// Temperature
+	setInitialTemp( t );
 	setCurrentTemp( t );
 	setTempTarget( g );
 	setTempRate( s );
 	setTempTolerance( q );
 	
 	// Pressure
+	setInitialPressure( p );
 	setCurrentPressure( p );
 	setPressureRate( k );
 	setMaxPressure( m );// kPa
 	
 	// Ph
+	setInitialPh( h );
 	setCurrentPh( h );
 }
 
@@ -123,30 +126,79 @@ void BioReactor::init() {
 	setFillLevelTolerance( 1.0 );
 	
 	// Temperature
+	setInitialTemp( 22.0 );
 	setCurrentTemp( 22.0 );
 	setTempTarget( 0.0 );
 	setTempTolerance( 1.0 );
 	setTempRate( 0.0 );
 	
 	// Pressure
+	setInitialPressure( 100.1 );
 	setCurrentPressure( 100.1 );
 	setPressureRate( 0.0 );
 	setMaxPressure( 1.0 );// kPa
 	
 	// Ph
+	setInitialPh( 7.0 );
 	setCurrentPh( 7.0 );
 	setPhMin(7.0);
 	setPhMax(7.0);
 
 	// Valves
-	InputValveOpen = false;
-	OutputValveOpen = false;
+	closeInputValve();
+	closeOutputValve();
 	
-	// Initial State
-	Status = IDLE;
+	// Initial States
+	setState( IDLE );
+	setVolumeState( BELOW );
+	setTemperatureState( BELOW );
+	setPressureState( OK );
 	
 	return;
 }
+
+/*	=============================================================================
+	Re-initialize vars
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+void BioReactor::reset() {
+
+	// Erase prior readings
+	emptyRunningTemp();
+	emptyRunningPressure();
+	emptyRunningPh();
+	
+	// Class
+	setTotalTime( 0.0 );
+	
+	// Volume
+	setFillLevel( 0.0 );
+
+	// Temperature
+	setCurrentTemp( getInitialTemp() );
+	
+	// Pressure
+	setCurrentPressure( getInitialPressure() );
+
+	// Ph
+	setCurrentPh( getInitialPh() );
+	
+	// Valves
+	closeInputValve();
+	closeOutputValve();
+	
+	// Initial States
+	setState( IDLE );
+	setVolumeState( BELOW );
+	setTemperatureState( BELOW );
+	setPressureState( OK );
+		
+	return;
+}
+
+
 
 /*	=============================================================================
 	desc
@@ -217,8 +269,73 @@ double BioReactor::getTotalTime() {
 	@param 	none
 	@return 	none
 	========================================================================== */
+int BioReactor::setInitialTemp(double t) {
+	InitialTemp = t;
+	return 0;
+}
+
+/*	=============================================================================
+	desc
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+int BioReactor::getInitialTemp() {
+	return InitialTemp;
+}
+
+/*	=============================================================================
+	desc
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+int BioReactor::setInitialPressure(double t) {
+	InitialPressure = t;
+	return 0;
+}
+
+/*	=============================================================================
+	desc
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+int BioReactor::getInitialPressure() {
+	return InitialPressure;
+}
+
+/*	=============================================================================
+	desc
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+int BioReactor::setInitialPh(double t) {
+	InitialPh = t;
+	return 0;
+}
+
+/*	=============================================================================
+	desc
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+int BioReactor::getInitialPh() {
+	return InitialPh;
+}
+
+
+/*	=============================================================================
+	desc
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
 int BioReactor::setCurrentTemp(double t) {
 	CurrentTemp = t;
+	addTemp(t);
 	return 0;
 }
 
@@ -322,8 +439,81 @@ double BioReactor::getTempMax() {
 	@param 	none
 	@return 	none
 	========================================================================== */
+int BioReactor::addTemp(double t) {
+	RunningTemp.push_back(t);
+	return 0;
+}
+
+/*	=============================================================================
+	desc
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+int BioReactor::addPressure(double t) {
+	RunningPressure.push_back(t);
+	return 0;
+}
+
+/*	=============================================================================
+	desc
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+int BioReactor::addPh(double t) {
+	RunningPh.push_back(t);
+	return 0;
+}
+
+/*	=============================================================================
+	desc
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+int BioReactor::emptyRunningTemp() {
+	while ( !RunningTemp.empty() ) {
+		RunningTemp.erase( RunningTemp.begin() + 0 );
+	}
+	return 0;
+}
+
+/*	=============================================================================
+	desc
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+int BioReactor::emptyRunningPressure() {
+	while ( !RunningPressure.empty() ) {
+		RunningPressure.erase( RunningPressure.begin() + 0 );
+	}
+	return 0;
+}
+
+/*	=============================================================================
+	desc
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+int BioReactor::emptyRunningPh() {
+	while ( !RunningPh.empty() ) {
+		RunningPh.erase( RunningPh.begin() + 0 );
+	}
+	return 0;
+}
+
+/*	=============================================================================
+	desc
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
 int BioReactor::setCurrentPressure(double p) {
 	CurrentPressure = p;
+	addPressure(p);
 	return 0;
 }
 
@@ -408,6 +598,7 @@ double BioReactor::getPressureMax() {
 	========================================================================== */
 int BioReactor::setCurrentPh(double ph) {
 	CurrentPh = ph;
+	addPh( ph );
 	return 0;
 }
 
@@ -472,8 +663,8 @@ double BioReactor::getPhMax() {
 int BioReactor::setTempRange() {
 
 	if ( RunningTemp.size() == 1 ) {
-		setPhMin( RunningTemp.at(8) );
-		setPhMax( RunningTemp.at(8) );
+		setTempMin( RunningTemp.at(8) );
+		setTempMax( RunningTemp.at(8) );
 	} else {
 		double min = INFINITY;
 		double max = -INFINITY;
@@ -483,8 +674,8 @@ int BioReactor::setTempRange() {
 			if ( RunningTemp.at(i) > max ) max = RunningTemp.at(i);
 		}
 		
-		setPhMin(min);
-		setPhMax(max);
+		setTempMin(min);
+		setTempMax(max);
 	}
 	return 0;
 }
@@ -498,8 +689,8 @@ int BioReactor::setTempRange() {
 int BioReactor::setPressureRange() {
 
 	if ( RunningPressure.size() == 1 ) {
-		setPhMin( RunningPressure.at(8) );
-		setPhMax( RunningPressure.at(8) );
+		setPressureMin( RunningPressure.at(0) );
+		setPressureMax( RunningPressure.at(0) );
 	} else {
 		double min = INFINITY;
 		double max = -INFINITY;
@@ -509,8 +700,8 @@ int BioReactor::setPressureRange() {
 			if ( RunningPressure.at(i) > max ) max = RunningPressure.at(i);
 		}
 		
-		setPhMin(min);
-		setPhMax(max);
+		setPressureMin(min);
+		setPressureMax(max);
 	}
 	return 0;
 }
@@ -524,8 +715,8 @@ int BioReactor::setPressureRange() {
 int BioReactor::setPhRange() {
 	
 	if ( RunningPh.size() == 1 ) {
-		setPhMin( RunningPh.at(8) );
-		setPhMax( RunningPh.at(8) );
+		setPhMin( RunningPh.at(0) );
+		setPhMax( RunningPh.at(0) );
 	} else {
 		double min = INFINITY;
 		double max = -INFINITY;
@@ -594,7 +785,7 @@ double BioReactor::getFillTarget() {
 	========================================================================== */
 int BioReactor::setFillLevel(double f) {
 	FillLevel = f;
-	if ( f > 0.0 ) ( setFillPercentage( getContainerVolume() / f ) * 100.0);
+	if ( f > 0.0 ) ( setFillPercentage( f / getContainerVolume() ) * 100.0);
 	return 0;
 }
 
@@ -939,29 +1130,107 @@ bool BioReactor::isOutputValveOpen() {
 	========================================================================== */
 int BioReactor::run() {
 	int status = 0;
+	int upDown = 0; // to decrease or increase
 
+	
+	
+	openInputValve();
+	closeOutputValve();
 	exportConfig();
 	setState(RUNNING);
-	std::cout << "Running...\n";
-	while ( getState() == RUNNING ) {
-		ticks.wait(10);
-		importConfig(); // for updating valves
-		setState(DONE);	
+
+	if ( getDebugMode() > 0 ) {
+		std::cout << "Running...\n";
 	}
 	
-	std::cout << "Running...DONE!\n";
-	setState(DONE);
-	return status;
-}
-
-/*	=============================================================================
-	desc
+	timer.start();
+	while ( getState() == RUNNING ) {
 	
-	@param 	none
-	@return 	none
-	========================================================================== */
-int BioReactor::reset() {
-	int status = 0;
+		// seed rng
+		srand (time(NULL)); 
+	
+		// Fill container
+		if ( isInputValveOpen() && !isOutputValveOpen() ) {
+			setFillLevel( getFillLevel() + getFillRate() );
+			if ( getFillPercentage() > ( getFillTarget() - getFillLevelTolerance() ) ) {
+				if ( getFillPercentage() > ( getFillTarget() + getFillLevelTolerance() ) ) {
+					setVolumeState(ABOVE);
+					if ( getFillPercentage() > 100.0 ) {
+						closeInputValve(); // Stop Filling
+					}
+				} else {
+					setVolumeState(OK);
+					closeInputValve(); // Stop Filling
+				}
+				
+			}
+		}
+		
+		// Check Temp
+		setCurrentTemp( getCurrentTemp() + getTempRate() );
+		if ( getCurrentTemp() > ( getTempTarget() - getTempTolerance() ) ) {
+			if ( getCurrentTemp() > ( getTempTarget() + getTempTolerance() ) ) {
+				setTemperatureState(ABOVE);
+				setState(ERRORED);
+			} else {
+				setTemperatureState(OK);
+			}
+		}
+		
+		// Check Pressure
+		if ( isInputValveOpen() ) {
+			setCurrentPressure( getCurrentPressure() + getPressureRate() );
+			if ( getCurrentPressure() > getMaxPressure() ) {
+				setPressureState(ABOVE);
+				setState(ERRORED);
+			} 
+		}
+		
+		// Check Ph
+		upDown = rand() % 2 + 1;
+		if ( upDown == 0 ) {
+			if ( getCurrentPh() > 0 ) setCurrentPh( getCurrentPh() - 0.1 );
+		} else {
+			if ( getCurrentPh() < 14 ) setCurrentPh( getCurrentPh() + 0.1 );
+		}
+
+		
+		
+		// Everything is ok, process complete
+		if ( getVolumeState() == OK && getTemperatureState() == OK && getPressureState() == OK ) {
+			setState(DONE);	
+		} // else continue
+		
+		// Tick for next pass
+		ticks.wait(1);
+		importConfig(); // for updating valves
+		getStatus();
+		
+		if ( getDebugMode() > 0 ) {
+			std::cout << "IN: ";
+			if ( isInputValveOpen() ) std::cout << "OPEN, "; else std::cout << "CLOSED, ";
+			std::cout << "OUT: ";
+			if ( isOutputValveOpen() ) std::cout << "OPEN, "; else std::cout << "CLOSED, ";
+			std::cout << "Fill: " << getFillPercentage() << "%, ";
+			std::cout << "Temp: " << getCurrentTemp() << "C, ";
+			std::cout << "Pressure: " << getCurrentPressure() << " kPa, ";
+			std::cout << "PH: " << getCurrentPh() << "\n";	
+		}
+	}
+	
+	timer.stop();
+	setTotalTime( timer.getDuration());
+	
+	// Update Min/Max
+	setTempRange();
+	setPressureRange();
+	setPhRange();
+	openOutputValve();
+	
+	if ( getDebugMode() > 0 ) {
+		std::cout << "Running...DONE!\n";
+	}
+	setState(DONE);
 	return status;
 }
 
@@ -1103,6 +1372,8 @@ std::string BioReactor::getStatus() {
 	parameters["Ph"] = getCurrentPh();
 	parameters["Pressure"] = getCurrentPressure();
 	parameters["Temperature"] = getCurrentTemp();
+	parameters["InputValveOpen"] = isInputValveOpen();
+	parameters["OutputValveOpen"] = isOutputValveOpen();
 	
 	// Serialize
 	std::string status = json::Serialize(parameters);
@@ -1146,8 +1417,8 @@ std::string BioReactor::getReport() {
 	parameters["PressureState"] = getPressureStateAsString();
 	parameters["PhMin"] = getPhMin();
 	parameters["PhMax"] = getPhMax();
-	parameters["InputValveOpen"] = isInputValveOpen();
-	parameters["OutputValveOpen"] = isOutputValveOpen();
+	//parameters["InputValveOpen"] = isInputValveOpen();
+	//parameters["OutputValveOpen"] = isOutputValveOpen();
 	parameters["TotalTime"] = getTotalTime();
 	parameters["Successful"] = getStateAsString();
 	

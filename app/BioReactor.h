@@ -114,9 +114,14 @@ class BioReactor {
 		std::string getVolumeStateAsString();
 			
 		// Temperature 
+		int setInitialTemp(
+			double);
+		int getInitialTemp();
 		int setCurrentTemp(
 			double);
 		double getCurrentTemp();
+		int addTemp(
+			double);
 		int setTempTarget(
 			double);
 		double getTempTarget();
@@ -139,9 +144,14 @@ class BioReactor {
 		std::string getTemperatureStateAsString();
 		
 		// Pressure
+		int setInitialPressure(
+			double);
+		int getInitialPressure();
 		int setCurrentPressure(
 			double);	
 		double getCurrentPressure();
+		int addPressure(
+			double);
 		int setPressureRate(
 			double);
 		double getPressureRate();
@@ -161,9 +171,14 @@ class BioReactor {
 		std::string getPressureStateAsString();
 		
 		// Ph
+		int setInitialPh(
+			double);
+		int getInitialPh();
 		int setCurrentPh(
 			double);
 		double getCurrentPh();
+		int addPh(
+			double);
 		int setPhMin(
 			double);
 		double getPhMin();
@@ -184,20 +199,23 @@ class BioReactor {
 			double);
 		double getTotalTime();
 		
+		int importConfig();		
+		int exportConfig();
 		
+		std::string getReport();
+		std::string getStatus();
+		
+		int emptyRunningTemp();
+		int emptyRunningPressure();
+		int emptyRunningPh();
 		
 		// TODO ===========================================
 		int run();
-		int reset();
-		std::string getReport();
-		std::string getStatus();
-		int importConfig();		
-		int exportConfig();
 
-		
 	private:
 		
 		void init();
+		void reset();
 		
 		// Parameters
 		unsigned ID = ERROR_UNT;
@@ -208,17 +226,20 @@ class BioReactor {
 		double FillPercentage = 0.0; 		// as percentage
 		double FillRate = 0.0; 				// Container fill rate unit/sec
 		double FillLevelTolerance = 1.0;	// Fill tolerance +/- percent of fill /container size
+		double InitialTemp = 0.0;
 		double CurrentTemp = 0.0;			// Temperature in Celsius
 		double TempTarget = 0.0;			// Temperature target in Celsius
 		double TempTolerance = 0.0;		// Temperature tolerance +/- C
 		double TempRate = 0.0;				// Temperature change rate C/sec
 		double TempMin = 0.0;				// Recorded Minimum temp
 		double TempMax = 0.0;				// Recorded Maximum temp
+		double InitialPressure = 101.0;
 		double CurrentPressure = 0.0;		// Pressure in kPa
 		double PressureRate = 0.0;			// in kPa /sec
 		double PressureMin = 0.0;			// Recorded Minimum pressure
 		double PressureMax = 0.0;			// Recorded Maximum pressure
 		double MaxPressure = 1.0; 			// Ceiling value kPa
+		double InitialPh = 7.0;
 		double CurrentPh = 0.0;				// Ph
 		double PhMin = 0.0;					// Recorded Ph pressure
 		double PhMax = 0.0;					// Recorded Ph pressure
