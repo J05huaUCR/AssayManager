@@ -211,6 +211,10 @@ class BioReactor {
 		
 		// TODO ===========================================
 		int run();
+		double readFillLevel();
+		double readTemp();
+		double readPressure();
+		double readPh();
 
 	private:
 		

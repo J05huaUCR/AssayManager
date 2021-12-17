@@ -1128,12 +1128,58 @@ bool BioReactor::isOutputValveOpen() {
 	@param 	none
 	@return 	none
 	========================================================================== */
-int BioReactor::run() {
-	int status = 0;
-	int upDown = 0; // to decrease or increase
+double BioReactor::readFillLevel() {
+	return getFillLevel() + getFillRate();
+}
 
+/*	=============================================================================
+	desc
 	
+	@param 	none
+	@return 	none
+	========================================================================== */
+double BioReactor::readTemp() {
+	return getCurrentTemp() + getTempRate();
+}
+		
+/*	=============================================================================
+	desc
 	
+	@param 	none
+	@return 	none
+	========================================================================== */
+double BioReactor::readPressure() {
+	return getCurrentPressure() + getPressureRate();
+}
+/*	=============================================================================
+	Creates random fluctuations in Ph
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+double BioReactor::readPh() {
+	// seed rng
+	srand (time(NULL)); 
+	double value = 0.0;
+	unsigned upDown = rand() % 100 + 1;
+	if ( (upDown % 2) == 0 ) {
+		if ( getCurrentPh() > 0 ) value = getCurrentPh() - 0.1;
+	} else {
+		if ( getCurrentPh() < 14 ) value = getCurrentPh() + 0.1;
+	}
+	return value;
+}
+
+/*	=============================================================================
+	desc
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+int BioReactor::run() {
+
+	int status = 0;
+
 	openInputValve();
 	closeOutputValve();
 	exportConfig();
@@ -1146,12 +1192,12 @@ int BioReactor::run() {
 	timer.start();
 	while ( getState() == RUNNING ) {
 	
-		// seed rng
-		srand (time(NULL)); 
-	
 		// Fill container
 		if ( isInputValveOpen() && !isOutputValveOpen() ) {
-			setFillLevel( getFillLevel() + getFillRate() );
+		
+			// Ping Sensor
+			setFillLevel( readFillLevel() );
+			
 			if ( getFillPercentage() > ( getFillTarget() - getFillLevelTolerance() ) ) {
 				if ( getFillPercentage() > ( getFillTarget() + getFillLevelTolerance() ) ) {
 					setVolumeState(ABOVE);
@@ -1167,7 +1213,7 @@ int BioReactor::run() {
 		}
 		
 		// Check Temp
-		setCurrentTemp( getCurrentTemp() + getTempRate() );
+		setCurrentTemp( readTemp() ); // Ping Sensor
 		if ( getCurrentTemp() > ( getTempTarget() - getTempTolerance() ) ) {
 			if ( getCurrentTemp() > ( getTempTarget() + getTempTolerance() ) ) {
 				setTemperatureState(ABOVE);
@@ -1179,7 +1225,10 @@ int BioReactor::run() {
 		
 		// Check Pressure
 		if ( isInputValveOpen() ) {
-			setCurrentPressure( getCurrentPressure() + getPressureRate() );
+		
+			// Ping Sensor
+			setCurrentPressure( readPressure() );
+			
 			if ( getCurrentPressure() > getMaxPressure() ) {
 				setPressureState(ABOVE);
 				setState(ERRORED);
@@ -1187,14 +1236,7 @@ int BioReactor::run() {
 		}
 		
 		// Check Ph
-		upDown = rand() % 2 + 1;
-		if ( upDown == 0 ) {
-			if ( getCurrentPh() > 0 ) setCurrentPh( getCurrentPh() - 0.1 );
-		} else {
-			if ( getCurrentPh() < 14 ) setCurrentPh( getCurrentPh() + 0.1 );
-		}
-
-		
+		setCurrentPh( readPh() ); // Ping Sensor	
 		
 		// Everything is ok, process complete
 		if ( getVolumeState() == OK && getTemperatureState() == OK && getPressureState() == OK ) {
@@ -1281,7 +1323,9 @@ std::string BioReactor::getInfo() {
 	@return 	none
 	========================================================================== */
 void BioReactor::print() {
-	std::cout << getInfo();
+	if ( getDebugMode() > 0 ) {
+		std::cout << getInfo();
+	}
 	return;
 }
 

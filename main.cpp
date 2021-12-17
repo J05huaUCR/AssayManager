@@ -15,7 +15,7 @@ int main( int argc, const char* argv[] ) {
 	// Init
 	//std::string menuInput = "";
 	Interface* interface = new Interface();
-	interface->setDebugMode(2);
+	interface->setDebugMode(0);
 	interface->clearScreen();
 
 	// Process Arguments if passed in
@@ -110,34 +110,20 @@ int main( int argc, const char* argv[] ) {
 	if (interface->getParameter("H").val_dbl != ERROR_DBL) {
 		h = interface->getParameter("H").val_dbl;
 	}
-	
-	/* Main Menu Loop	
-	while ( menuInput != "x") {
-	
-		// Output Interface	
-		interface->printMenu();
-		std::cin >> menuInput;
-		interface->setMenuOption(menuInput);
-		interface->printMenu();
-		std::cout << menuInput << "\n";
-	}
-	
-	interface->clearScreen();
-	std::cout << "Application terminated.\n";
-	*/
-	
+
 	BioReactor* br1 = new BioReactor(i,l,c,f,r,o,t,g,s,q,p,k,m,h);
-	br1->setDebugMode(Debug);
-	std::cout << "INFO ====================================\n";
-	br1->print();
-	br1->run();
-	std::cout << "INFO ====================================\n";
-	br1->print();
-	std::cout << "STATUS ====================================\n";
-	std::cout << br1->getStatus() << endl;
-	std::cout << "BATCH RECORD ====================================\n";
-	std::cout << br1->getReport() << endl;
-	
+	if (Debug) {
+		br1->setDebugMode(Debug);
+		std::cout << "INFO ====================================\n";
+		br1->print();
+		br1->run();
+		std::cout << "INFO ====================================\n";
+		br1->print();
+		std::cout << "STATUS ====================================\n";
+		std::cout << br1->getStatus() << endl;
+		std::cout << "BATCH RECORD ====================================\n";
+		std::cout << br1->getReport() << endl;
+	}
 	return 0;
 }
 
