@@ -94,8 +94,8 @@ BioReactor::BioReactor( unsigned i, std::string l,
 	setCurrentPh( h );
 	
 	// Output Files
-	getReport();
-	getStatus();
+	exportReport();
+	exportStatus();
 	exportConfig();
 }
 
@@ -1251,7 +1251,7 @@ int BioReactor::run() {
 		// Tick for next pass
 		ticks.wait(1);
 		importConfig(); // for updating valves
-		getStatus();
+		exportStatus(); // Write out
 		
 		if ( getDebugMode() > 0 ) {
 			std::cout << "IN: ";
@@ -1437,6 +1437,43 @@ std::string BioReactor::getStatus() {
 /*	=============================================================================
 	desc
 	
+	Fill-level – Percentage
+	pH
+	Pressure – kPa
+	Temperature – degrees Celsius
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+int BioReactor::exportStatus() {
+
+	// Initialize
+	json::Object parameters;
+	
+	// Set Parameters
+	parameters["ID"] = getID();
+	parameters["Label"] = getLabel();
+	parameters["Status"] = getStateAsString();
+	parameters["FillLevelPercentage"] = getFillPercentage();
+	parameters["Ph"] = getCurrentPh();
+	parameters["Pressure"] = getCurrentPressure();
+	parameters["Temperature"] = getCurrentTemp();
+	parameters["InputValveOpen"] = isInputValveOpen();
+	parameters["OutputValveOpen"] = isOutputValveOpen();
+	
+	// Serialize
+	std::string status = json::Serialize(parameters);
+	
+	// Write out
+	File* outputResults = new File();
+	outputResults->write(REPORT_DIR + toString( getID() ) + STATUS_SUFFIX, status);
+	
+	return 0;
+}
+
+/*	=============================================================================
+	desc
+	
 	Whether the batch was considered successful
 	Actual fill level reached in the vessel
 	Temperature range during the process
@@ -1480,6 +1517,53 @@ std::string BioReactor::getReport() {
 
 	// Return Serialized JSON
 	return report;
+}
+
+/*	=============================================================================
+	desc
+	
+	Whether the batch was considered successful
+	Actual fill level reached in the vessel
+	Temperature range during the process
+	pH range during the process
+	Pressure range during the process
+	Total time for the process
+	Whether the CPP of +/- 2% for vessel fill level was met
+	Whether the CPP of +/- 1 degree Celsius for maximum temperature was met
+	Whether the CPP of pressure held below 200 kPa was met
+	
+	@param 	none
+	@return 	none
+	========================================================================== */
+int BioReactor::exportReport() {
+
+	// Build Object
+	json::Object parameters;
+	parameters["ID"] = getID();
+	parameters["Label"] = getLabel();
+	parameters["FillLevel"] = getFillLevel();
+	parameters["VolumeState"] = getVolumeStateAsString();
+	parameters["TempMin"] = getTempMin();
+	parameters["TempMax"] = getTempMax();
+	parameters["TemperatureState"] = getTemperatureStateAsString();
+	parameters["PressureMin"] = getPressureMin();
+	parameters["PressureMax"] = getPressureMax();
+	parameters["PressureState"] = getPressureStateAsString();
+	parameters["PhMin"] = getPhMin();
+	parameters["PhMax"] = getPhMax();
+	//parameters["InputValveOpen"] = isInputValveOpen();
+	//parameters["OutputValveOpen"] = isOutputValveOpen();
+	parameters["TotalTime"] = getTotalTime();
+	parameters["Successful"] = getStateAsString();
+	
+	// Serialize
+	std::string report = json::Serialize(parameters);
+	
+	// Write out
+	File* outputResults = new File();
+	outputResults->write(REPORT_DIR + toString( getID() ) + REPORT_SUFFIX, report);
+
+	return 0;
 }
 
 /*	=============================================================================

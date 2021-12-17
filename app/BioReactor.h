@@ -201,6 +201,8 @@ class BioReactor {
 		
 		int importConfig();		
 		int exportConfig();
+		int exportStatus();
+		int exportReport();
 		
 		std::string getReport();
 		std::string getStatus();

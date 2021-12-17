@@ -112,6 +112,9 @@ int main( int argc, const char* argv[] ) {
 	}
 
 	BioReactor* br1 = new BioReactor(i,l,c,f,r,o,t,g,s,q,p,k,m,h);
+	br1->run();
+	br1->exportStatus();
+	br1->exportReport();
 	if (Debug) {
 		br1->setDebugMode(Debug);
 		std::cout << "INFO ====================================\n";
