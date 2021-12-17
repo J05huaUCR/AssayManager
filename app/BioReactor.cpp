@@ -92,6 +92,11 @@ BioReactor::BioReactor( unsigned i, std::string l,
 	// Ph
 	setInitialPh( h );
 	setCurrentPh( h );
+	
+	// Output Files
+	getReport();
+	getStatus();
+	exportConfig();
 }
 
 /*	=============================================================================
