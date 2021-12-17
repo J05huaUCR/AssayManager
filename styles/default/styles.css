@@ -1,0 +1,111 @@
+/* CSS Document */
+
+p {
+  font-family: "Arial", Arial, sans-serif;
+}
+
+h3 {
+  font-family: "Arial", Arial, sans-serif;
+  font-size:18px;
+}
+
+body {
+	margin: 20px;
+	color: black;
+	background-color: white;
+	font-family: "Arial", Arial, sans-serif;
+	font-size:14px;
+}
+
+input[type=text], select {
+  /*width: 100%;*/
+  padding: 8px 10px;
+  margin: 4px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=submit] {
+  width: 100px;
+  background-color: #00AACC;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  
+}
+
+input[type=submit]:hover {
+  background-color: #003399;
+}
+
+div #wrapper {
+  width: 100%;
+  text-align:center;
+}
+
+div #image {
+  width: 100%;
+  text-align:center;
+  margin-bottom:10px;
+}
+
+div #error {
+  border-radius: 10px;
+  background-color: #FF0000;
+  color: white;
+  padding: 20px;
+  margin-bottom: 10px;
+}
+
+div #form {
+  border-radius: 10px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+  text-align:center;
+}
+
+div .row_left_col {
+  width:50%;	
+  text-align:right;
+  float:left;
+  padding: 0 5px 0 0;
+  margin: 0px;
+
+}
+
+div .row_right_col {
+  width:50%;	
+  text-align:left;
+  float:left;
+  padding: 0 0 0 5px;
+  margin: 0px;
+}
+
+error {	
+	font: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color:#FF0000;
+}
+
+running {	
+	font: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color:#99DD00;
+}
