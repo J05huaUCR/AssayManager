@@ -34,19 +34,19 @@ int main( int argc, const char* argv[] ) {
 	}
 	
 	// Flag I: Label
-	std::string l = "<no label>";
+	std::string l = "not defined";
 	if (interface->getParameter("L").val_str != ERROR_STR) {
 		l = interface->getParameter("L").val_str;
 	}
 
 	// Flag C: Container Volume
-	double c = 0.0;
+	double c = 100.0;
 	if (interface->getParameter("C").val_dbl != ERROR_DBL) {
 		c = interface->getParameter("C").val_dbl;
 	}
 	
 	// Flag F: Target Volume in percentage
-	double f = 100.0;
+	double f = 80.0;
 	if (interface->getParameter("F").val_dbl != ERROR_DBL) {
 		f = interface->getParameter("F").val_dbl;
 	}
@@ -119,9 +119,7 @@ int main( int argc, const char* argv[] ) {
 		br1->setDebugMode(Debug);
 		std::cout << "INFO ====================================\n";
 		br1->print();
-		br1->run();
-		std::cout << "INFO ====================================\n";
-		br1->print();
+		//br1->run();
 		std::cout << "STATUS ====================================\n";
 		std::cout << br1->getStatus() << endl;
 		std::cout << "BATCH RECORD ====================================\n";

@@ -1,5 +1,5 @@
 # CC contains the g++ compiler, supports multithreading
-CC = g++ -std=c++11 -pthread -static-libstdc++
+CC = g++ -std=c++11 -static 
 
 # CFLAGS contains the options for the compiler
 CFLAGS = -g -c -Wall

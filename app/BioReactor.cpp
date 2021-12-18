@@ -790,7 +790,11 @@ double BioReactor::getFillTarget() {
 	========================================================================== */
 int BioReactor::setFillLevel(double f) {
 	FillLevel = f;
-	if ( f > 0.0 ) ( setFillPercentage( f / getContainerVolume() ) * 100.0);
+	if ( getContainerVolume() > 0.0 ) {
+		( setFillPercentage( f / getContainerVolume() ) * 100.0);
+	} else {
+		setFillPercentage(0.0);
+	}
 	return 0;
 }
 
@@ -1188,11 +1192,14 @@ int BioReactor::run() {
 	openInputValve();
 	closeOutputValve();
 	exportConfig();
+	exportStatus(); // Write out
 	setState(RUNNING);
 
 	if ( getDebugMode() > 0 ) {
 		std::cout << "Running...\n";
 	}
+	
+	
 	
 	timer.start();
 	while ( getState() == RUNNING ) {
@@ -1278,6 +1285,7 @@ int BioReactor::run() {
 		std::cout << "Running...DONE!\n";
 	}
 	setState(DONE);
+	exportReport();
 	return status;
 }
 
@@ -1555,6 +1563,11 @@ int BioReactor::exportReport() {
 	//parameters["OutputValveOpen"] = isOutputValveOpen();
 	parameters["TotalTime"] = getTotalTime();
 	parameters["Successful"] = getStateAsString();
+	parameters["Status"] = getStateAsString();
+	parameters["FillLevelPercentage"] = getFillPercentage();
+	parameters["Ph"] = getCurrentPh();
+	parameters["Pressure"] = getCurrentPressure();
+	parameters["Temperature"] = getCurrentTemp();
 	
 	// Serialize
 	std::string report = json::Serialize(parameters);
