@@ -38,17 +38,23 @@ $json = json_decode(file_get_contents($dirFileName),TRUE);
 $count = $json['count'];
 
 // Check if bioreactor called
-if( isset($_POST['id'] ) ) {
+if( isset($_POST['menu'] ) ) {
 	
 	// Check if id present
 	$id = $_POST['id'];
 
-	if ( isset($_POST['new'] ) ) {
+	// if new
+	if ( $_POST['menu'] == 'new' ) {
+		
+		//echo $id  . "<br>";
+		
+		// Increment id
+		$id += 1;
+		
+		//echo $id . "<br>";
 		
 		// creating
 		$label = $_POST['label'];
-		$json['count'] = $count + 1;
-		file_put_contents($dirFileName, json_encode($json));
 		
 		// Build command path
 		$program = "main.run";
@@ -75,82 +81,110 @@ if( isset($_POST['id'] ) ) {
 			/**/
 			$program .= $paramters;
 			exec("./". $program . " 2>&1", $output, $return); 
+			
+			/* file output 
+			echo "</br>";
+			var_dump( $output );
+			echo "</br>";
+			echo "</br>";*/
+			
+			/* viewing /updating status
+			foreach($output as $x => $x_value) {
+			  echo "Key=" . $x . ", Value=" . $x_value;
+			  echo "<br>";
+			}
+			echo $return . "<br />";*/	
+
+			//if (!isset($errors)) exec("./". $program . " 2>&1", $output, $return); // PDF
 
 		} else {
 			echo $program . " does not exist.</br></br>";
 		}
 		
-	} 
-	
-	$statusFileName = "reports/".$id."_status.json";
-	if ( file_exists($statusFileName) ) {
-		$statusArray = json_decode(file_get_contents($statusFileName),TRUE);
-		if ( isset($_POST['InputValveOpen'] ) ) {
-			$statusArray['InputValveOpen'] = $_POST['InputValveOpen'];
-		}
+		// Update count
+		$json['count'] = $id;
+		file_put_contents($dirFileName, json_encode($json));
 		
-		if ( isset($_POST['OutputValveOpen'] ) ) {
-			$statusArray['OutputValveOpen'] = $_POST['OutputValveOpen'];
-		}
-		file_put_contents($statusFileName, json_encode($statusArray));
-		
-		// viewing /updating status
-		foreach ($statusArray as $k => $v ) {
-			echo $k;
-			echo ": ";
-			echo $v;
-			echo "<br>";
-		}
-	} else {
-		echo "status file |";	
-		echo $statusFileName;
-		echo "| does not exist<br>";
-	}
+	} // done with new
 	
-	$configFileName = "configs/".$id."_config.json";
-	if ( file_exists($configFileName) ) {
-		$configArray = json_decode(file_get_contents($configFileName),TRUE);
-		if ( isset($_POST['InputValveOpen'] ) ) {
-			$configArray['InputValveOpen'] = $_POST['InputValveOpen'];
-		}
-		
-		if ( isset($_POST['OutputValveOpen'] ) ) {
-			$configArray['OutputValveOpen'] = $_POST['OutputValveOpen'];
-		}
-		file_put_contents($configFileName, json_encode($configArray));
-		
-		// viewing /updating status
-		foreach ($statusArray as $k => $v ) {
-			echo $k;
-			echo ": ";
-			echo $v;
-			echo "<br>";
-		}
-	} else {
-		echo "config file |";	
-		echo $configFileName;
-		echo "| does not exist<br>";
-	}
-	
-	
-	
-	
-	/*
-	if ( file_exists($statusFileName) ) {
-		echo $statusFileName . " exists.</br></br>";
-	} else {
-		echo $statusFileName . " does not exist.</br></br>";
-	}
-	
-	foreach ($statusArray as $k => $v ) {
-		echo $k;
-		echo ": ";
-		echo $v;
-		echo "<br>";
-	}
-	*/
+	if ( $_POST['menu'] == 'report' ) {
 
-	$menu = 'status';
+		// get report
+		$reportFileName = "reports/".$id."_report.json";
+		if ( file_exists($reportFileName) ) {
+			//echo $statusFileName . " found.<br>";
+			
+			// REad status from JSON
+			$reportArray = json_decode(file_get_contents($reportFileName),TRUE);
+		
+			/* viewing /updating status
+			foreach ($statusArray as $k => $v ) {
+				echo $k;
+				echo ": ";
+				echo $v;
+				echo "<br>";
+			}*/
+			
+		} else {
+			echo "status file |";	
+			echo $reportFileName;
+			echo "| does not exist<br>";
+		}
+		$menu = 'report';
+		
+	} else {
+		
+		// get status
+		$statusFileName = "reports/".$id."_status.json";
+		if ( file_exists($statusFileName) ) {
+			//echo $statusFileName . " found.<br>";
+			
+			// REad status from JSON
+			$statusArray = json_decode(file_get_contents($statusFileName),TRUE);
+		
+			/* viewing /updating status
+			foreach ($statusArray as $k => $v ) {
+				echo $k;
+				echo ": ";
+				echo $v;
+				echo "<br>";
+			}*/
+			
+		} else {
+			echo "status file |";	
+			echo $statusFileName;
+			echo "| does not exist<br>";
+		}
+		
+		// Edit config
+		$configFileName = "configs/".$id."_config.json";
+		if ( file_exists($configFileName) ) {
+			$configArray = json_decode(file_get_contents($configFileName),TRUE);
+			if ( isset($_POST['InputValveOpen'] ) ) {
+				$configArray['InputValveOpen'] = $_POST['InputValveOpen'];
+			}
+			
+			if ( isset($_POST['OutputValveOpen'] ) ) {
+				$configArray['OutputValveOpen'] = $_POST['OutputValveOpen'];
+			}
+			file_put_contents($configFileName, json_encode($configArray));
+			
+			/* viewing /updating status
+			foreach ($configArray as $k => $v ) {
+				echo $k;
+				echo ": ";
+				echo $v;
+				echo "<br>";
+			}*/
+			
+		} else {
+			echo "config file |";	
+			echo $configFileName;
+			echo "| does not exist<br>";
+		}
+		$menu = 'status';
+	}
+	
 } else {
 	$menu = 'new';
 	$id = $count;
