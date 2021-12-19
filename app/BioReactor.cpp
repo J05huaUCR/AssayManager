@@ -141,7 +141,7 @@ void BioReactor::init() {
 	setInitialPressure( 101.325 );
 	setCurrentPressure( 101.325 );
 	setPressureRate( 1.0 );
-	setMaxPressure( 200.00 );// kPa
+	setMaxPressure( 300.00 );// kPa
 	
 	// Ph
 	setInitialPh( 7.0 );
@@ -1249,7 +1249,9 @@ int BioReactor::run() {
 		if ( getCurrentPressure() > getMaxPressure() ) {
 			setPressureState(ABOVE);
 			setState(ERRORED);
-		} 
+		} else {
+			setPressureState(OK);
+		}
 		
 		// Check Ph
 		setCurrentPh( readPh() ); // Ping Sensor	

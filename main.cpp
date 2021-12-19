@@ -40,7 +40,7 @@ int main( int argc, const char* argv[] ) {
 	}
 
 	// Flag C: Container Volume
-	double c = 100.0;
+	double c = 300.0;
 	if (interface->getParameter("C").val_dbl != ERROR_DBL) {
 		c = interface->getParameter("C").val_dbl;
 	}
@@ -76,7 +76,7 @@ int main( int argc, const char* argv[] ) {
 	}
 	
 	// Flag S: Temperature change rate in Celsius /sec
-	double s = 70.0;
+	double s = 1.0;
 	if (interface->getParameter("S").val_dbl != ERROR_DBL) {
 		s = interface->getParameter("S").val_dbl;
 	}
@@ -88,19 +88,19 @@ int main( int argc, const char* argv[] ) {
 	}
 	
 	// Flag P: Initial Pressure in kPa
-	double p = 101.0;
+	double p = 101.365;
 	if (interface->getParameter("P").val_dbl != ERROR_DBL) {
 		p = interface->getParameter("P").val_dbl;
 	}
 	
 	// Flag K: Rate of pressure change in kPa /sec
-	double k = 5.0;
+	double k = 1.0;
 	if (interface->getParameter("K").val_dbl != ERROR_DBL) {
 		k = interface->getParameter("K").val_dbl;
 	}
 	
 	// Flag M: Maximum Pressure in kPa
-	double m = 200.0;
+	double m = 300.0;
 	if (interface->getParameter("M").val_dbl != ERROR_DBL) {
 		m = interface->getParameter("M").val_dbl;
 	}
