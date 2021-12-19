@@ -123,25 +123,25 @@ void BioReactor::init() {
 	setTotalTime( 0.0 );
 	
 	// Volume
-	setContainerVolume(15.0);
+	setContainerVolume(300.0);
 	setFillLevel( 0.0 );
-	setFillTarget( 0.0 );
+	setFillTarget( 70.0 );
 	setFillPercentage( 0.0 );
-	setFillRate( 0.0 ); 
-	setFillLevelTolerance( 1.0 );
+	setFillRate( 5.0 ); 
+	setFillLevelTolerance( 2.0 );
 	
 	// Temperature
-	setInitialTemp( 22.0 );
-	setCurrentTemp( 22.0 );
-	setTempTarget( 0.0 );
+	setInitialTemp( 17.0 );
+	setCurrentTemp( 17.0 );
+	setTempTarget( 80.0 );
 	setTempTolerance( 1.0 );
 	setTempRate( 0.0 );
 	
 	// Pressure
-	setInitialPressure( 100.1 );
-	setCurrentPressure( 100.1 );
-	setPressureRate( 0.0 );
-	setMaxPressure( 1.0 );// kPa
+	setInitialPressure( 101.325 );
+	setCurrentPressure( 101.325 );
+	setPressureRate( 1.0 );
+	setMaxPressure( 200.00 );// kPa
 	
 	// Ph
 	setInitialPh( 7.0 );
@@ -1159,11 +1159,16 @@ double BioReactor::readTemp() {
 	========================================================================== */
 double BioReactor::readPressure() {
 	double newPressure = 0.0;
-	if ( !isInputValveOpen() && !isOutputValveOpen() ) {
+	
+	// Taking on fluid
+	if ( isInputValveOpen() ) {
 		newPressure = getCurrentPressure() + getPressureRate();
-	} else {
+	} else if ( !isOutputValveOpen() ) {
 		newPressure = getInitialPressure();
+	} else {
+		newPressure = getCurrentPressure();
 	}
+	
 	return newPressure;
 }
 /*	=============================================================================
@@ -1204,8 +1209,6 @@ int BioReactor::run() {
 	if ( getDebugMode() > 0 ) {
 		std::cout << "Running...\n";
 	}
-	
-	
 	
 	timer.start();
 	while ( getState() == RUNNING ) {
