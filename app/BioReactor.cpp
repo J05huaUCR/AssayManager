@@ -1158,7 +1158,13 @@ double BioReactor::readTemp() {
 	@return 	none
 	========================================================================== */
 double BioReactor::readPressure() {
-	return getCurrentPressure() + getPressureRate();
+	double newPressure = 0.0;
+	if ( !isInputValveOpen() && !isOutputValveOpen() ) {
+		newPressure = getCurrentPressure() + getPressureRate();
+	} else {
+		newPressure = getInitialPressure();
+	}
+	return newPressure;
 }
 /*	=============================================================================
 	Creates random fluctuations in Ph
@@ -1236,16 +1242,11 @@ int BioReactor::run() {
 		}
 		
 		// Check Pressure
-		if ( isInputValveOpen() ) {
-		
-			// Ping Sensor
-			setCurrentPressure( readPressure() );
-			
-			if ( getCurrentPressure() > getMaxPressure() ) {
-				setPressureState(ABOVE);
-				setState(ERRORED);
-			} 
-		}
+		setCurrentPressure( readPressure() ); // Ping Sensor
+		if ( getCurrentPressure() > getMaxPressure() ) {
+			setPressureState(ABOVE);
+			setState(ERRORED);
+		} 
 		
 		// Check Ph
 		setCurrentPh( readPh() ); // Ping Sensor	
@@ -1284,7 +1285,7 @@ int BioReactor::run() {
 	if ( getDebugMode() > 0 ) {
 		std::cout << "Running...DONE!\n";
 	}
-	setState(DONE);
+	//setState(DONE);
 	exportReport();
 	return status;
 }
