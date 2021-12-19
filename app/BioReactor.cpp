@@ -62,7 +62,7 @@ BioReactor::BioReactor( unsigned i, std::string l,
 								double p, double k, double m, 			 // Pressure
 								double h // Ph 
 								) {
-	
+		
 	// Base Initialization
 	init();
 	
@@ -791,7 +791,7 @@ double BioReactor::getFillTarget() {
 int BioReactor::setFillLevel(double f) {
 	FillLevel = f;
 	if ( getContainerVolume() > 0.0 ) {
-		( setFillPercentage( f / getContainerVolume() ) * 100.0);
+		setFillPercentage( (FillLevel / getContainerVolume() ) * 100.0);
 	} else {
 		setFillPercentage(0.0);
 	}
@@ -815,7 +815,6 @@ double BioReactor::getFillLevel() {
 	@return 	none
 	========================================================================== */
 int BioReactor::setFillRate(double f) {
-	if ( f > 100.0 ) f = 100.0;
 	FillRate = f;
 	return 0;
 }
@@ -1213,25 +1212,38 @@ int BioReactor::run() {
 	timer.start();
 	while ( getState() == RUNNING ) {
 	
-		// Fill container
+		// Fill container when input is open and output is closed
 		if ( isInputValveOpen() && !isOutputValveOpen() ) {
 		
+			if ( getDebugMode() > 0 ) {
+				std::cout << indent(1) << "Filling: " << getFillPercentage() << " <> ";
+				std::cout << getFillTarget() << " - " << getFillLevelTolerance() << "\n";
+			}
+		
 			// Ping Sensor
-			setFillLevel( readFillLevel() );
+			setFillLevel( readFillLevel() );		
 			
 			if ( getFillPercentage() > ( getFillTarget() - getFillLevelTolerance() ) ) {
-				if ( getFillPercentage() > ( getFillTarget() + getFillLevelTolerance() ) ) {
-					setVolumeState(ABOVE);
-					if ( getFillPercentage() > 100.0 ) {
-						closeInputValve(); // Stop Filling
-					}
-				} else {
-					setVolumeState(OK);
-					closeInputValve(); // Stop Filling
+			
+				closeInputValve(); // Stop Filling
+				
+				exportConfig();
+				
+				if ( getDebugMode() > 0 ) {
+					std::cout << indent(1) << "Fill target Met, ";
+					std::cout << "input valve ";
+					if ( isInputValveOpen() ) std::cout << "open\n"; else std::cout << "closed\n";
 				}
 				
+				if ( getFillPercentage() > ( getFillTarget() + getFillLevelTolerance() ) ) {
+					setVolumeState(ABOVE);
+				} else {
+					setVolumeState(OK);
+				}
 			}
+			
 		}
+	
 		
 		// Check Temp
 		setCurrentTemp( readTemp() ); // Ping Sensor

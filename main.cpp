@@ -100,7 +100,7 @@ int main( int argc, const char* argv[] ) {
 	}
 	
 	// Flag M: Maximum Pressure in kPa
-	double m = 300.0;
+	double m = 200.0;
 	if (interface->getParameter("M").val_dbl != ERROR_DBL) {
 		m = interface->getParameter("M").val_dbl;
 	}
@@ -110,13 +110,13 @@ int main( int argc, const char* argv[] ) {
 	if (interface->getParameter("H").val_dbl != ERROR_DBL) {
 		h = interface->getParameter("H").val_dbl;
 	}
-
+	
 	BioReactor* br1 = new BioReactor(i,l,c,f,r,o,t,g,s,q,p,k,m,h);
+	br1->setDebugMode(Debug);
 	br1->run();
 	br1->exportStatus();
 	br1->exportReport();
 	if (Debug) {
-		br1->setDebugMode(Debug);
 		std::cout << "INFO ====================================\n";
 		br1->print();
 		//br1->run();
