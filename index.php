@@ -45,13 +45,9 @@ if( isset($_POST['menu'] ) ) {
 
 	// if new
 	if ( $_POST['menu'] == 'new' ) {
-		
-		//echo $id  . "<br>";
-		
+
 		// Increment id
 		$id += 1;
-		
-		//echo $id . "<br>";
 		
 		// creating
 		$label = $_POST['label'];
@@ -62,41 +58,31 @@ if( isset($_POST['menu'] ) ) {
 		// Build paramters
 		$paramters  = " -i " . $id;
 		$paramters .= " -l " . $label;
-		$paramters .= " -c " . $defaults['c'];
-		$paramters .= " -f " . $defaults['f'];
-		$paramters .= " -r " . $defaults['r'];
-		$paramters .= " -o " . $defaults['o'];
-		$paramters .= " -t " . $defaults['t'];
-		$paramters .= " -g " . $defaults['g'];
-		$paramters .= " -s " . $defaults['s'];
-		$paramters .= " -q " . $defaults['q'];
-		$paramters .= " -p " . $defaults['p'];
-		$paramters .= " -k " . $defaults['k'];
-		$paramters .= " -m " . $defaults['m'];
-		$paramters .= " -h " . $defaults['h'];
-		
-		//echo "Executable path: " . $program . $paramters . "</br>";
+		$paramters .= " -c " . number_format($defaults['c'], 6, '.', '');
+		$paramters .= " -f " . number_format($defaults['f'], 6, '.', '');
+		$paramters .= " -r " . number_format($defaults['r'], 6, '.', '');
+		$paramters .= " -o " . number_format($defaults['o'], 6, '.', '');
+		$paramters .= " -t " . number_format($defaults['t'], 6, '.', '');
+		$paramters .= " -g " . number_format($defaults['g'], 6, '.', '');
+		$paramters .= " -s " . number_format($defaults['s'], 6, '.', '');
+		$paramters .= " -q " . number_format($defaults['q'], 6, '.', '');
+		$paramters .= " -p " . number_format($defaults['p'], 6, '.', '');
+		$paramters .= " -k " . number_format($defaults['k'], 6, '.', '');
+		$paramters .= " -m " . number_format($defaults['m'], 6, '.', '');
+		$paramters .= " -h " . number_format($defaults['h'], 6, '.', '');
 		
 		if ( file_exists($program) ) {
 			/**/
 			$program .= $paramters;
-			exec("./". $program . " 2>&1", $output, $return); 
+			//exec("./". $program . " 2>&1", $output, $return); 
+			exec("./". $program . " > /dev/null &");  
 			
-			/* file output 
-			echo "</br>";
-			var_dump( $output );
-			echo "</br>";
-			echo "</br>";*/
+			//echo $program;
 			
-			/* viewing /updating status
-			foreach($output as $x => $x_value) {
-			  echo "Key=" . $x . ", Value=" . $x_value;
-			  echo "<br>";
-			}
-			echo $return . "<br />";*/	
-
-			//if (!isset($errors)) exec("./". $program . " 2>&1", $output, $return); // PDF
-
+			// Wait before continuing
+			sleep(1);
+			
+			
 		} else {
 			echo $program . " does not exist.</br></br>";
 		}
@@ -112,18 +98,9 @@ if( isset($_POST['menu'] ) ) {
 		// get report
 		$reportFileName = "reports/".$id."_report.json";
 		if ( file_exists($reportFileName) ) {
-			//echo $statusFileName . " found.<br>";
-			
+
 			// REad status from JSON
 			$reportArray = json_decode(file_get_contents($reportFileName),TRUE);
-		
-			/* viewing /updating status
-			foreach ($statusArray as $k => $v ) {
-				echo $k;
-				echo ": ";
-				echo $v;
-				echo "<br>";
-			}*/
 			
 		} else {
 			echo "status file |";	
@@ -134,54 +111,46 @@ if( isset($_POST['menu'] ) ) {
 		
 	} else {
 		
+		// Edit config
+		$configFileName = "configs/".$id."_config.json";
+		
+		if ( file_exists($configFileName) ) {
+			
+			// Read config file
+			$configArray = json_decode(file_get_contents($configFileName),TRUE);
+			
+			// Set Input Valve
+			if ( isset($_POST['InputValveOpen'] ) ) {
+				$configArray['InputValveOpen'] = $_POST['InputValveOpen'];
+			}
+			
+			// Set Output Valve
+			if ( isset($_POST['OutputValveOpen'] ) ) {
+				$configArray['OutputValveOpen'] = $_POST['OutputValveOpen'];
+			}
+			
+			// Write Config File
+			file_put_contents($configFileName, json_encode($configArray));
+
+		} else {
+			echo "config file |";	
+			echo $configFileName;
+			echo "| does not exist<br>";
+		}
+		
 		// get status
 		$statusFileName = "reports/".$id."_status.json";
 		if ( file_exists($statusFileName) ) {
-			//echo $statusFileName . " found.<br>";
 			
 			// REad status from JSON
 			$statusArray = json_decode(file_get_contents($statusFileName),TRUE);
-		
-			/* viewing /updating status
-			foreach ($statusArray as $k => $v ) {
-				echo $k;
-				echo ": ";
-				echo $v;
-				echo "<br>";
-			}*/
-			
+					
 		} else {
 			echo "status file |";	
 			echo $statusFileName;
 			echo "| does not exist<br>";
 		}
 		
-		// Edit config
-		$configFileName = "configs/".$id."_config.json";
-		if ( file_exists($configFileName) ) {
-			$configArray = json_decode(file_get_contents($configFileName),TRUE);
-			if ( isset($_POST['InputValveOpen'] ) ) {
-				$configArray['InputValveOpen'] = $_POST['InputValveOpen'];
-			}
-			
-			if ( isset($_POST['OutputValveOpen'] ) ) {
-				$configArray['OutputValveOpen'] = $_POST['OutputValveOpen'];
-			}
-			file_put_contents($configFileName, json_encode($configArray));
-			
-			/* viewing /updating status
-			foreach ($configArray as $k => $v ) {
-				echo $k;
-				echo ": ";
-				echo $v;
-				echo "<br>";
-			}*/
-			
-		} else {
-			echo "config file |";	
-			echo $configFileName;
-			echo "| does not exist<br>";
-		}
 		$menu = 'status';
 	}
 	

@@ -78,17 +78,19 @@
                     </div><!-- row_left_col --> 
                     <div class="row_right_col">
                     <?
-					if ( $statusArray['InputValveOpen'] == 1 ){
-						$inputValveStatus = "Open";
-						$inputButtonLabel = "Close";
-						$inputValveState = 0;
-					} else {
+					if ( $configArray['InputValveOpen'] == 0 ){
+						// Valve Currently Open
 						$inputValveStatus = "Closed";
 						$inputButtonLabel = "Open";
 						$inputValveState = 1;
+					} else {
+						// Valve Currently Closed
+						$inputValveStatus = "Open";
+						$inputButtonLabel = "Close";
+						$inputValveState = 0;
 					}
 					?>
-                        <p><?=$inputValveStatus?> </p>
+                        <p><?=$inputValveStatus?></p>
                         <form id="inputValve" name="inputValve" method="post" action="index.php">
                      		<input type="hidden" id="id" name="id" value="<?=$id?>">
                             <input type="hidden" id="menu" name="menu" value="status">
@@ -104,22 +106,24 @@
                     </div><!-- row_left_col --> 
                     <div class="row_right_col">
                     <?
-					if ( $statusArray['OutputValveOpen'] == 1 ){
-						$outputValveStatus = "Open";
-						$outputButtonLabel = "Close";
-						$outputValveState = 0;
-					} else {
+					if ( $configArray['OutputValveOpen'] == 0 ){
+						// Valve Currently Open
 						$outputValveStatus = "Closed";
 						$outputButtonLabel = "Open";
 						$outputValveState = 1;
+					} else {
+						// Valve Currently Closed
+						$outputValveStatus = "Open";
+						$outputButtonLabel = "Close";
+						$outputValveState = 0;
 					}
 					?>
-                        <p><?=$outputValveStatus?> </p>
+                        <p><?=$outputValveStatus?></p>
                         <form id="outputValve" name="outputValve" method="post" action="index.php">
                      		<input type="hidden" id="id" name="id" value="<?=$id?>">
                             <input type="hidden" id="menu" name="menu" value="status">
                             <input type="hidden" id="OutputValveOpen" name="OutputValveOpen" value="<?=$outputValveState?>">
-                            <input type="submit" value="<?=$inputButtonLabel?>">
+                            <input type="submit" value="<?=$outputButtonLabel?>">
                         </form>   
                     </div><!-- row_right_col -->
                 </div><!-- row -->
